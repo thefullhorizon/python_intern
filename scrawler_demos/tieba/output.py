@@ -18,9 +18,13 @@ class Output(object):
         print "start to save data to " + file_name
         fout = open(file_name, 'w')
         fout.write("<html>")
+        fout.write("<br/>")
         fout.write("<head><meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\"></head>")
+        fout.write("<br/>")
         fout.write("<body>")
+        fout.write("<br/>")
         fout.write("<table>")
+        fout.write("<br/>")
 
         fout.write("<tr>")
         fout.write("<td>%s</td>" % 'number')

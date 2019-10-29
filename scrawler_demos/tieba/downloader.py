@@ -1,27 +1,37 @@
 # -*- coding=utf-8 -*-
+import socket
 import urllib2
 # python3x
 # import urllib.request
+
+# unique download tools
+
+
 class HtmlDownloader(object):
 
-    def download(self, url):
+    @staticmethod
+    def download(url):
+
         if url is None:
             print 'Address can not be null'
             return
-        print "start to download "
+        print "start to download ..."
         # Add cookie
         user_agent = "User-Agent:Mozilla/5.0(compatible;MSIE9.0;WindowsNT6.1;Trident/5.0;"
-        headers = {'User-Agent':user_agent}
+        headers = {'User-Agent': user_agent}
         request = urllib2.Request(url, headers=headers)
-
+        global response
         try:
-            response = urllib2.urlopen(request, timeout=10)
+            response = urllib2.urlopen(request, timeout=5)
         except urllib2.HTTPError, e:
             print e.code
         except urllib2.URLError, e:
-            print e.reason
+            if isinstance(e.reason, socket.timeout):
+                print "time out"
+            else:
+                print e.reason
 
         if response.getcode() != 200:
             return None
-        print "end to download "
+        print "end to download ..."
         return response.read()

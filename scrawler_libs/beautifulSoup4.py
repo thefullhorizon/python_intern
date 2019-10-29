@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup
 
 from scrawler_demos.tieba.downloader import HtmlDownloader
 
+# 文档参考中心：https://beautifulsoup.readthedocs.io/zh_CN/v4.4.0/#
+
 # 要解析的本地Html页面
 # html = 'index.html'
 # 用BS来加载解析
