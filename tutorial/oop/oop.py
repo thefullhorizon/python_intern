@@ -14,8 +14,6 @@
 
 3. 多态和继承
 
-
-
 '''
 
 # ------------------------------------Practise------------------------------------
@@ -40,24 +38,24 @@ class Student(object):
         self.local_var_also_in_function = formal_parameter
 
     def ordinary_function(formal_parameter):
-        print 'I am an ordinary function, I can not visit class var and instance var'
+        print('I am an ordinary function, I can not visit class var and instance var')
         # print self.instance_var
         # print class_var
 
     @classmethod
     def class_method(cls, formal_parameter):
-        print 'I am class method, I can visit(modifying) class var and instance var'
+        print('I am class method, I can visit(modifying) class var and instance var')
 
         cls.instance_var = formal_parameter
-        print 'instance_var : ' + cls.instance_var
+        print('instance_var : ' + cls.instance_var)
 
         class_var = formal_parameter
-        print 'class_var : ' + class_var
+        print('class_var : ' + class_var)
 
     @staticmethod
     def static_method(formal_parameter):
-        print 'I am static method, I am the Adopted son(干儿子) for this class!!'
-        print "I can't modify anything in the class "
+        print('I am static method, I am the Adopted son(干儿子) for this class!!')
+        print("I can't modify anything in the class ")
         # print class_var
         # print self.instance_var
 

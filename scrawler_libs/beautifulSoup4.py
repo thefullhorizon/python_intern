@@ -20,7 +20,7 @@ html_doc = html_loader.download(html_url)
 # 使用BS4解析
 bsoup = BeautifulSoup(html_doc, 'html.parser', from_encoding='utf-8')
 
-print '------------------- Implementing -------------------'
+print('------------------- Implementing -------------------')
 # last_url = bsoup.find('a', class_='last pagination-item ')['href']
 # print last_url.split('pn=')[1]
 

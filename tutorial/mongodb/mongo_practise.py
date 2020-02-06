@@ -16,6 +16,7 @@ class CJsonEncoder(json.JSONEncoder):
         else:
             return json.JSONEncoder.default(self, obj)
 
+
 mongo_util = MongoUtil()
 db_zzu = mongo_util.get_db('zzu')
 # 查询数据库中所有的collections
@@ -46,7 +47,7 @@ posts = [{
 # 重新生成的数据
 # collection_post.remove()
 # collection_post.insert_many(posts)
-print collection_post.find().count()
+print(collection_post.find().count())
 selected_item = None
 for item in collection_post.find():
     if selected_item is None:
@@ -55,7 +56,7 @@ for item in collection_post.find():
     if item['number'] > selected_item['number']:
         selected_item = item
 
-print '%s(%d) : %s' % (selected_item['title'],  selected_item['number'], selected_item['url'])
+print('%s(%d) : %s' % (selected_item['title'],  selected_item['number'], selected_item['url']))
 
 
 

@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from tutorial.mongodb.mongo_encap import MongoUtil
 
+'this is a document instruction'
+
+__author__ = "horizon"
 
 class PostStatisticInfo(object):
 

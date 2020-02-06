@@ -11,21 +11,21 @@ class Parser(object):
 
 
     def get_last_number(self, html_doc):
-        '''
+        """
         # href = "//tieba.baidu.com/f?kw=%E9%83%91%E5%B7%9E%E5%A4%A7%E5%AD%A6&amp;ie=utf-8&amp;pn=810950"
         :param html_doc:
         :return: 810950
-        '''
+        """
         bsoup = BeautifulSoup(html_doc, 'html.parser', from_encoding='utf-8')
         last_url = bsoup.find('a', class_='last pagination-item ')['href']
         return int(last_url.split('pn=')[1])
 
     def parser_zhengda_tieba(self, html_url, html_doc):
-        '''
+        """
         obtain statistic of viewing of each post base on specified html content
         :return: list
-        '''
-        print "start to parse "
+        """
+        print("start to parse ")
         bsoup = BeautifulSoup(html_doc, 'html.parser', from_encoding='utf-8')
 
         post_statistic_infos = []
@@ -48,5 +48,5 @@ class Parser(object):
             # 添加进内存
             post_statistic_infos.append(item)
 
-        print "complete to parse "
+        print("complete to parse ")
         return post_statistic_infos

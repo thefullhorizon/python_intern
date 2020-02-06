@@ -12,7 +12,7 @@ class Student(object):
         self.score = score
 
     def print_info(self):
-        print '%s : %d' % (self.name, self.score)
+        print('%s : %d' % (self.name, self.score))
 
 if __name__ == '__main__':
 

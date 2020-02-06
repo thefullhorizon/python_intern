@@ -4,18 +4,17 @@
 class Output(object):
 
     def save_to_db(self, document):
-        '''
-
+        """
         :param document:
         :return:
-        '''
+        """
         pass
 
     def save_to_html(self, file_name, data):
 
         if data is None or len(data) == 0:
             return 
-        print "start to save data to " + file_name
+        print("start to save data to " + file_name)
         fout = open(file_name, 'w')
         fout.write("<html>")
         fout.write("<br/>")
@@ -44,18 +43,18 @@ class Output(object):
         fout.write("</html>")
 
         fout.close()
-        print "complete to save"
+        print("complete to save")
 
     def save_to_text(self, file_name, data):
 
-        '''
+        """
         save data to file
         :param file_name:
         :param data: PostStatisticInfo []
         :return:
-        '''
+        """
 
-        print "saving data to " + file_name
+        print("saving data to " + file_name)
 
         valid_data = ''
         for item in data:
@@ -64,5 +63,5 @@ class Output(object):
         file_save = open(file_name, 'w')
         file_save.write(valid_data)
         file_save.close()
-        print "complete to save"
+        print("complete to save")
 

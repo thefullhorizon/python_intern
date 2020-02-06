@@ -1,8 +1,8 @@
 # -*- coding=utf-8 -*-
 
-'''
+"""
 主要参考url的管理写法
-'''
+"""
 
 
 class UrlManager(object):

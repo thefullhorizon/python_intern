@@ -5,27 +5,28 @@ __author__ = 'horizon'
 
 import re
 import urllib
-import urllib2
-import cookielib
+import urllib.request
 
-print '----------------------base API----------------------------'
+
+print('----------------------base API----------------------------')
+
 
 def module_written():
-    '''
-        紧接着方法下一行来写，可以作为python的文档来看
-        :return:
-    '''
+    """
+    紧接着方法下一行来写，可以作为python的文档来看
+    :return:
+    """
     return 0
 
-print '---------------------- proxy ----------------------------'
+
+print('---------------------- proxy ----------------------------')
 
 url = 'https://pic2.zhimg.com/v2-0ff8d18e29c55d412bbaf52b56ba024d_r.jpg'
-response = urllib2.urlopen(url, timeout=10)
+response = urllib.request.urlopen(url, timeout=10)
 with open("spider.jpg", "wb") as file_img:
     file_img.write(response.read())
 
 '''
-
 print '----------------------re----------------------------'
 pattern = re.compile(r'hello')
 matchResult = re.match(pattern, 'x hello horizon hello')
