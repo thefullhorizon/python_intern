@@ -2,7 +2,7 @@
 
 from bs4 import BeautifulSoup
 
-from project.scrawler_demos.tieba.downloader import HtmlDownloader
+from project.scrawler_tieba.downloader import HtmlDownloader
 
 # 文档参考中心：https://beautifulsoup.readthedocs.io/zh_CN/v4.4.0/#
 
