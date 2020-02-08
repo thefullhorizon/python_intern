@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from tutorial.mongodb.mongo_encap import MongoUtil
+from tutorial.database.mongodb.api import MongoUtil
 
 'this is a document instruction'
 

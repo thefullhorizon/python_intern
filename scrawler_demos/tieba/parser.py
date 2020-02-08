@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-import json
 import re
 
 from bs4 import BeautifulSoup
 from scrawler_demos.tieba.post_statistic_info import PostStatisticInfo
-from tutorial.mongodb.mongo_encap import MongoUtil
 
 
 class Parser(object):
