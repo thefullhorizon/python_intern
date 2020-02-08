@@ -20,7 +20,8 @@ class CJsonEncoder(json.JSONEncoder):
             return json.JSONEncoder.default(self, obj)
 
 
+# query_all()
+# update()
+# delete()
 query_all()
-print("--------------------------------")
-query()
 

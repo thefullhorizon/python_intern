@@ -2,7 +2,7 @@
 import re
 
 from bs4 import BeautifulSoup
-from scrawler_demos.tieba.post_statistic_info import PostStatisticInfo
+from project.scrawler_demos.tieba.post_statistic_info import PostStatisticInfo
 
 
 class Parser(object):

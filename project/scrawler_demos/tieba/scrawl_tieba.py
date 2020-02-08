@@ -1,8 +1,8 @@
 # -*- coding=utf-8 -*-
 
-from scrawler_demos.tieba.downloader import HtmlDownloader
-from scrawler_demos.tieba.output import Output
-from scrawler_demos.tieba.parser import Parser
+from project.scrawler_demos.tieba.downloader import HtmlDownloader
+from project.scrawler_demos.tieba.output import Output
+from project.scrawler_demos.tieba.parser import Parser
 
 '''
 
