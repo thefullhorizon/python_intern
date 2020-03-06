@@ -1,0 +1,8 @@
+
+应用，笔记角度下的数据库
+
+Oracle：        高吞吐数据库解决方案
+MySQL:          面向建站方面的数据库
+postgreSQL：    相当于是MySQL的升级 ，推荐和Django配合使用
+MongoDB：       分布式NoSQL数据库
+Redis:          缓存数据库
