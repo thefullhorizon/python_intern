@@ -24,7 +24,7 @@ lc = LineCollection(segments, cmap='viridis', norm=norm)
 lc.set_array(dydx)
 lc.set_linewidth(2)
 line = axs[0].add_collection(lc)
-fig.colorbar(line, ax=axs[0]) 158 0173 6413
+fig.colorbar(line, ax=axs[0])
 
 # Use a boundary norm instead
 cmap = ListedColormap(['r', 'g', 'b'])
