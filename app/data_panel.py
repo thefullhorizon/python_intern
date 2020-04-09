@@ -15,7 +15,7 @@ def show_diff_time():
     获得距离年初已经几天了
     :return:
     """
-    current_day = datetime(2020, 3, 6)
+    current_day = datetime.now()
     diff01 = current_day - datetime(2020, 1, 1)
     diff02 = datetime(2021, 1, 1) - current_day
     print("今天是第{}天,距离2021年还有{}天".format(diff01.days+1, diff02.days-1))
