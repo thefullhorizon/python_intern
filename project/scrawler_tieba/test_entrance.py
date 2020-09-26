@@ -1,4 +1,5 @@
 # -*- coding=utf-8 -*-
+from tqdm import tqdm
 
 from project.scrawler_tieba.downloader import HtmlDownloader
 from project.scrawler_tieba.output import Output
@@ -34,13 +35,12 @@ class Crawler(object):
         post_statistic_infos = []
         # if end_page == -1:
         #     end_page = parser.get_last_number() + 1
-        for i in range(1, end_page + 1):
-
+        print("")
+        print(">>> Data obtain...")
+        for i in tqdm(range(end_page)):
             # generate valid url
-            pn = 50 * (i - 1)
+            pn = 50 * i
             complete_url = url + str(pn)
-            print(">>> crawling all web pages")
-            print("start to crawl page number " + str(i) + " : "+complete_url)
 
             # download into local
             html_doc = self.loader.download(complete_url)
@@ -53,32 +53,33 @@ class Crawler(object):
                 # 数据存入list中
                 post_statistic_infos.append(item)
 
-        print(">>> crawled all web pages")
-
         # analysis the data
-        print(">>> start to analysis")
+        print("")
+        print(">>> Data analysis...")
         max_l = 0
         max_object = None
         for item in post_statistic_infos:
             if max_l < item.number:
                 max_l = item.number
                 max_object = item
-        print(">>> end to analysis ")
-        print("what the result is : " + str(max_l) + " >>> "+max_object.title)
-        # output data to a container
+        print("")
+        print("what the most hot theme is " + max_object.title
+              + " and " + str(max_l) + " people take part in , let's access it ")
+        # TODO 直接调用chrome访问地址
 
+        # output data to a container
         # output to html
-        file_name = 'post_statistic_infos.html'
-        self.output.save_to_html_excel(file_name, [max_object])
+        # file_name = 'post_statistic_infos.html'
+        # self.output.save_to_html_excel(file_name, [max_object])
         # self.output.save_to_text(file_name, [max_object])
         ## output to db(mongodb)
 
 
 if __name__ == '__main__':
 
-    print('we are scrawling web is ZZU post website ...')
+    print('')
+    title = 'We are scrawling web is ZZU post website, please enter the end page:'
     url = 'http://tieba.baidu.com/f?kw=%E9%83%91%E5%B7%9E%E5%A4%A7%E5%AD%A6&ie=utf-8&pn='
     crawler = Crawler()
-    end_page = int(input('enter the end page: '))
+    end_page = int(input(title))
     crawler.crawl(url, end_page)
-    # crawler.crawl(url, 10)

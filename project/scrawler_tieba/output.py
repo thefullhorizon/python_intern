@@ -15,8 +15,7 @@ class Output(object):
         以表格的方式输出到Html文件中
         """
         if data is None or len(data) == 0:
-            return 
-        print("start to save data to " + file_name)
+            return
         fout = open(file_name, 'w')
         fout.write("<html>")
         fout.write("<br/>")
@@ -45,7 +44,6 @@ class Output(object):
         fout.write("</html>")
 
         fout.close()
-        print("complete to save")
 
     def save_to_text(self, file_name, data):
 
@@ -56,8 +54,6 @@ class Output(object):
         :return:
         """
 
-        print("saving data to " + file_name)
-
         valid_data = ''
         for item in data:
             valid_data = valid_data + item.get_data()+'\n'
@@ -65,5 +61,4 @@ class Output(object):
         file_save = open(file_name, 'w')
         file_save.write(valid_data)
         file_save.close()
-        print("complete to save")
 

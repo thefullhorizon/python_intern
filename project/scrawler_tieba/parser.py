@@ -22,7 +22,6 @@ class Parser(object):
         obtain statistic of viewing of each post base on specified html content
         :return: list
         """
-        print("start to parse ")
         bsoup = BeautifulSoup(html_doc, 'html.parser', from_encoding='utf-8')
 
         post_statistic_infos = []
@@ -45,5 +44,4 @@ class Parser(object):
             # item.save_to_db()
             # 添加进内存
             post_statistic_infos.append(item)
-        print("complete to parse ")
         return post_statistic_infos
