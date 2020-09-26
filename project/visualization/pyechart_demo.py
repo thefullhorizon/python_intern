@@ -1,9 +1,10 @@
 # coding=utf-8
 
 from __future__ import unicode_literals
+from pyecharts import WordCloud
 from pyecharts import Bar, Gauge, Geo, Scatter3D, Page
 
-render_address = r"d:\my_chart.html"
+render_address = r"my_chart.html"
 
 # 简单的生成一个bar
 # bar = Bar("this is my first chart", "this a subtitle")
@@ -19,14 +20,14 @@ render_address = r"d:\my_chart.html"
 # gauge.render(render_address)
 
 # 简单的生成一个空气质量图
-data = [
-    ("海南", 9), ("Shanghai", 12)]
-geo = Geo("main cities air quality ", "data from pm2.5", title_color="#fff", title_pos="center", width=1200, height=600, background_color = '#404a59')
-attr, value = geo.cast(data)
-geo.add("", attr, value, visual_range=[0, 200], visual_text_color="#fff", symbol_size=15, is_visualmap=True)
-# geo.add_coordinate("海南", 119.3, 26.08)
-geo.show_config()
-geo.render(render_address)
+# data = [
+#     ("cn", 9), ("Shanghai", 12)]
+# geo = Geo("main cities air quality ", "data from pm2.5", title_color="#fff", title_pos="center", width=1200, height=600, background_color='#404a59')
+# attr, value = geo.cast(data)
+# geo.add("", attr, value, visual_range=[0, 200], visual_text_color="#fff", symbol_size=15, is_visualmap=True)
+# geo.add_coordinate("cn", 119.3, 26.08)
+# geo.show_config()
+# geo.render(render_address)
 
 # scatter3D
 # import random
@@ -38,3 +39,11 @@ geo.render(render_address)
 # scatter3D.add("", data, is_visualmap=True, visual_range_color=range_color)
 # page.add(scatter3D)
 # page.render(render_address)
+
+
+name = ['Sam S Club', 'Macys', 'Amy Schumer', 'Jurassic World', 'Charter Communications', 'Chick Fil A', 'Planet Fitness', 'Pitch Perfect', 'Express', 'Home', 'Johnny Depp', 'Lena Dunham', 'Lewis Hamilton', 'KXAN', 'Mary Ellen Mark', 'Farrah Abraham', 'Rita Ora', 'Serena Williams', 'NCAA baseball tournament', 'Point Break']
+value = [7000, 6181, 4386, 4055, 2467, 2244, 1898, 1484, 1112, 965, 847, 582, 555, 550, 462, 366, 360, 282, 273, 265]
+word_cloud = WordCloud(width=1300, height=620)
+word_cloud.add("", name, value, word_size_range=[20, 100])
+word_cloud.show_config()
+word_cloud.render(render_address)

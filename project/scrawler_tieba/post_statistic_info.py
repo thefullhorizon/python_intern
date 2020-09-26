@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from tutorial.database.mongodb.api import MongoUtil
-
+from tutorial.database.mongodb import api
 'this is a document instruction'
 
 __author__ = "horizon"
+
 
 class PostStatisticInfo(object):
 
@@ -15,7 +15,7 @@ class PostStatisticInfo(object):
         self.url = url
 
     def print_info(self):
-        print ('%d : %s : %s' % (self.number, self.title, self.url))
+        print('%d : %s : %s' % (self.number, self.title, self.url))
 
     def get_data(self):
         return self.title + " " + str(self.number) + " " + self.url
@@ -23,7 +23,7 @@ class PostStatisticInfo(object):
     def save_to_db(self):
         # 初始化数据库
         if PostStatisticInfo.zzu_collection is None:
-            mongo_util = MongoUtil()
+            mongo_util = api()
             zzu_db = mongo_util.get_db('zzu')
             PostStatisticInfo.zu_collection = zzu_db['post']
         self.zu_collection.insert(dict(number=self.number, title=self.title, url=self.url))

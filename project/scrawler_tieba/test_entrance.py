@@ -44,9 +44,11 @@ class Crawler(object):
 
             # download into local
             html_doc = self.loader.download(complete_url)
-
+            if html_doc is None:
+                print('Net work exception')
+                return
             # parse data
-            result = self.parser.parser_zhengda_tieba(complete_url, html_doc)
+            result = self.parser.parser_zhengda_tieba(html_doc)
             for item in result:
                 # 数据存入list中
                 post_statistic_infos.append(item)
@@ -56,17 +58,19 @@ class Crawler(object):
         # analysis the data
         print(">>> start to analysis")
         max_l = 0
+        max_object = None
         for item in post_statistic_infos:
             if max_l < item.number:
                 max_l = item.number
+                max_object = item
         print(">>> end to analysis ")
-        # print "what the result is : " + max_l
+        print("what the result is : " + str(max_l) + " >>> "+max_object.title)
         # output data to a container
 
         # output to html
         file_name = 'post_statistic_infos.html'
-        self.output.save_to_html(file_name, post_statistic_infos)
-
+        self.output.save_to_html_excel(file_name, [max_object])
+        # self.output.save_to_text(file_name, [max_object])
         ## output to db(mongodb)
 
 

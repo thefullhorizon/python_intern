@@ -10,8 +10,10 @@ class Output(object):
         """
         pass
 
-    def save_to_html(self, file_name, data):
-
+    def save_to_html_excel(self, file_name, data):
+        """
+        以表格的方式输出到Html文件中
+        """
         if data is None or len(data) == 0:
             return 
         print("start to save data to " + file_name)
@@ -58,7 +60,7 @@ class Output(object):
 
         valid_data = ''
         for item in data:
-            valid_data = valid_data + item.get_data().encode('utf-8')+'\n'
+            valid_data = valid_data + item.get_data()+'\n'
 
         file_save = open(file_name, 'w')
         file_save.write(valid_data)
