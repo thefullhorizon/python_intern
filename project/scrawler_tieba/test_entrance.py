@@ -1,4 +1,6 @@
 # -*- coding=utf-8 -*-
+import webbrowser
+from selenium import webdriver
 from tqdm import tqdm
 
 from project.scrawler_tieba.downloader import HtmlDownloader
@@ -62,17 +64,8 @@ class Crawler(object):
             if max_l < item.number:
                 max_l = item.number
                 max_object = item
-        print("")
-        print("what the most hot theme is " + max_object.title
-              + " and " + str(max_l) + " people take part in , let's access it ")
-        # TODO 直接调用chrome访问地址
 
-        # output data to a container
-        # output to html
-        # file_name = 'post_statistic_infos.html'
-        # self.output.save_to_html_excel(file_name, [max_object])
-        # self.output.save_to_text(file_name, [max_object])
-        ## output to db(mongodb)
+        return max_object
 
 
 if __name__ == '__main__':
@@ -82,4 +75,24 @@ if __name__ == '__main__':
     url = 'http://tieba.baidu.com/f?kw=%E9%83%91%E5%B7%9E%E5%A4%A7%E5%AD%A6&ie=utf-8&pn='
     crawler = Crawler()
     end_page = int(input(title))
-    crawler.crawl(url, end_page)
+    the_hot_item = crawler.crawl(url, end_page)
+
+    print("")
+    print("what the most hot theme is " + the_hot_item.title
+          + " and " + str(the_hot_item) + " people take part in , let's access it ")
+
+    # 使用浏览器直接打开
+    # 方式一（recommend）
+    webbrowser.open(the_hot_item.url)
+    # 方式二
+    # driver = webdriver.Chrome()
+    # driver.get(the_hot_item.url)
+
+    # output data to a container
+    # output to html
+    # file_name = 'post_statistic_infos.html'
+    # self.output.save_to_html_excel(file_name, [the_hot_item])
+    # self.output.save_to_text(file_name, [the_hot_item])
+
+    ## output to db(mongodb)
+
