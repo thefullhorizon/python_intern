@@ -2,7 +2,7 @@
 import webbrowser
 from selenium import webdriver
 
-from project.scrawler_tieba.crawl import Crawler
+from project.tieba.crawl import Crawler
 
 '''
 

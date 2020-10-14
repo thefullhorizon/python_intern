@@ -3,7 +3,7 @@ import time
 
 from bs4 import BeautifulSoup
 from datetime import datetime
-from project.scrawler_tieba.downloader import HtmlDownloader
+from project.tieba.downloader import HtmlDownloader
 
 """
 该模块主要自动化获取一些自己感兴趣的数据

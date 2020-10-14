@@ -13,7 +13,7 @@ from wordcloud import WordCloud
 # from pyecharts import Bar
 
 # 使用matplotlib能够显示中文
-from project.crawler_job.src.common_util import open_url
+from project.job.src.common_util import open_url
 
 mpl.rcParams['font.sans-serif'] = ['Arial Unicode MS']
 mpl.rcParams['axes.unicode_minus'] = False  # 解决保存图像是负号'-'显示为方块的问题
@@ -72,7 +72,7 @@ def visualize_city_bar(job_key, df):
     # bar = Bar("python职位的城市分布图")
     # bar.add("城市", keys, values)
     # bar.print_echarts_options()  # 该行只为了打印配置项，方便调试时使用
-    # result_url = "/Users/nashan/Documents/WS/pycharm/python_learning/project/crawler_job/a.html"
+    # result_url = "/Users/nashan/Documents/WS/pycharm/python_learning/project/job/a.html"
     # bar.render(path=result_url)
     # open_url(result_url)
 
@@ -108,7 +108,7 @@ def visualize_city_cloud(df):
     cut_word = ','.join(jieba.cut(text))
     # word_background = imread('公主.jpg')
     cloud = WordCloud(
-        font_path=r'/Users/nashan/Documents/WS/pycharm/python_learning/project/crawler_job/song.ttf',
+        font_path=r'/Users/nashan/Documents/WS/pycharm/python_learning/project/job/song.ttf',
         background_color='white',
         # mask=word_background,
         max_words=500,

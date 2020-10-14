@@ -1,9 +1,9 @@
 # -*- coding=utf-8 -*-
-from project.crawler_job.src.clean_data import clean_data
-from project.crawler_job.src.crawl_data import crawl_data
-from project.crawler_job.src.job_overall_analysis import analysis_between_job
-from project.crawler_job.src.job_overall_analysis import analysis_job_between_city
-from project.crawler_job.src.visualize_data import visualize_data
+from project.job.src.clean_data import clean_data
+from project.job.src.crawl_data import crawl_data
+from project.job.src.job_overall_analysis import analysis_between_job
+from project.job.src.job_overall_analysis import analysis_job_between_city
+from project.job.src.visualize_data import visualize_data
 
 """
 该项目主要目的是想完整走一遍数据分析的流程：
@@ -15,6 +15,9 @@ from project.crawler_job.src.visualize_data import visualize_data
 初始日期：200928
 城市坐标：上海   
 参考地址：https://www.cnblogs.com/sui776265233/p/11146969.html
+
+依次爬取 拉钩，智联，51Job，Boss, 猎聘网五大招聘网站，最好的招聘应该是平日里的自己通过能力来的积累。
+
 """
 
 job_key = "财务"

@@ -7,8 +7,8 @@
 * 分析同一职业在不同城市维度上的数量情况   -> analysis_job_between_city()
 """
 import numpy as np
-from project.crawler_job.src.crawl_data import crawl_data_by_city
-from project.crawler_job.src.visualize_data import visualize_two_dimension
+from project.job.src.crawl_data import crawl_data_by_city
+from project.job.src.visualize_data import visualize_two_dimension
 
 
 def analysis_between_job():

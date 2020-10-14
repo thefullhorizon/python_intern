@@ -2,14 +2,14 @@
 import re
 
 from bs4 import BeautifulSoup
-from project.scrawler_tieba.post_statistic_info import PostStatisticInfo
+from project.tieba.post_statistic_info import PostStatisticInfo
 
 
 class Parser(object):
 
     def get_last_number(self, html_doc):
         """
-        # href = "//scrawler_tieba.baidu.com/f?kw=%E9%83%91%E5%B7%9E%E5%A4%A7%E5%AD%A6&amp;ie=utf-8&amp;pn=810950"
+        # href = "//tieba.baidu.com/f?kw=%E9%83%91%E5%B7%9E%E5%A4%A7%E5%AD%A6&amp;ie=utf-8&amp;pn=810950"
         :param html_doc:
         :return: 810950
         """
