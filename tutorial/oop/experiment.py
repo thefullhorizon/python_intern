@@ -14,6 +14,7 @@ class Student(object):
     def print_info(self):
         print('%s : %d' % (self.name, self.score))
 
+
 if __name__ == '__main__':
 
     # experiment how to use class

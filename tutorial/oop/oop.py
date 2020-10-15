@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # ------------------------------------Note------------------------------------
-'''
+"""
 1. Class and instance
 和普通的函数相比，在类中定义的函数只有一点不同，就是第一个参数永远是实例变量self，并且，调用时，不用传递该参数。
 除此之外，类的方法和普通函数没有什么区别，所以，你仍然可以用默认参数、可变参数、关键字参数和命名关键字参数。
@@ -14,13 +14,12 @@
 
 3. 多态和继承
 
-'''
+"""
 
 # ------------------------------------Practise------------------------------------
 
 
 class Student(object):
-
 
     class_var = 'I am a class variable'
 
@@ -29,7 +28,7 @@ class Student(object):
         self.id = id
         self.name = name
 
-    def printSelf(self):
+    def print_self(self):
         print(self.__class__)
         print(self.__module__)
 
@@ -37,6 +36,8 @@ class Student(object):
         loca_var_in_function = formal_parameter
         self.local_var_also_in_function = formal_parameter
 
+
+    @staticmethod
     def ordinary_function(formal_parameter):
         print('I am an ordinary function, I can not visit class var and instance var')
         # print self.instance_var
@@ -58,7 +59,6 @@ class Student(object):
         print("I can't modify anything in the class ")
         # print class_var
         # print self.instance_var
-
 
 
 ins = Student(32,'horizon')
