@@ -12,11 +12,14 @@ from project.job.src.la_gou import analyze_job_base_la_gou
     1.一个职位的详细分析
     2.从全国的维度上看职位的市场行情
     
+完后状态跟踪：
+    目前初步完成了以拉钩为平台的职位数据分析
+   
 Initial Date    : 200928
 Location city   : Shanghai   
 Reference       : https://www.cnblogs.com/sui776265233/p/11146969.html
-Author          :   Cucumber
-Date            :   09/28/20
+Author          : Cucumber
+Date            : 09/28/20
 """
 if __name__ == '__main__':
     job = "财务"
