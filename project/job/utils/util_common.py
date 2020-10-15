@@ -1,8 +1,16 @@
 # -*- coding=utf-8 -*-
 
 # driver必须为全局变量，否则会出现浏览器打开闪退
+import os
 import time
 from selenium import webdriver
+
+
+def get_parent_dir():
+    """
+    :return: 获取当前执行路径下的父文件目录
+    """
+    return os.path.abspath(os.path.dirname(os.getcwd()))
 
 
 def open_url(path):

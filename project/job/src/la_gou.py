@@ -125,8 +125,8 @@ class LaGou:
         """
         :return     :获取保存文件的路径
         """
-        save_dir = os.path.abspath(os.path.dirname(os.getcwd()))
-        return save_dir + "/" + get_current_date() + '_' + self.job + '_raw.csv'
+
+        return get_current_date() + '_' + self.job + '_raw.csv'
 
     def __crawl_job_by_city(self, job, city=None):
         """
