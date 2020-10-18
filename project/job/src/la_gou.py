@@ -1,7 +1,6 @@
 # -*- coding=utf-8 -*-
 import numpy as np
 from project.job.utils.util_visualize import visualize_two_dimension, get_sign
-import os
 import requests
 import math
 import time
@@ -14,7 +13,7 @@ from wordcloud import WordCloud
 # from imageio import imread
 # import statsmodels.api as sm
 # from pyecharts import Bar
-from project.job.utils.util_common import get_current_date, get_cities, get_cities_test
+from project.job.utils.util_common import get_current_date, get_cities
 from pylab import mpl
 import matplotlib.pyplot as plt
 
@@ -49,6 +48,7 @@ class LaGou:
             districts = cities_districts[city]
             city_info = []
             print("start crawl " + city + " data")
+            # TODO 这里尝试使用多线程方式显示爬虫
             for district in tqdm(districts):
                 city_info += self.__crawl_data(city, district)
             total_info += city_info
@@ -83,7 +83,8 @@ class LaGou:
             time.sleep(3)
         return total_info
 
-    def __get_page_num(self, total_count):
+    @staticmethod
+    def __get_page_num(total_count):
         """
         :return: 根据职位总数计算总的分页数
         """
@@ -93,7 +94,8 @@ class LaGou:
         else:
             return page_num
 
-    def __get_page_info(self, jobs_list):
+    @staticmethod
+    def __get_page_info(jobs_list):
         """
         TODO 这里可以有两个优化点
             1. 需要的数据封装成对象
@@ -176,7 +178,8 @@ class LaGou:
         # plt.savefig('python薪资分布.jpg')
         plt.show()
 
-    def __visualize_city_pie(self, df):
+    @staticmethod
+    def __visualize_city_pie(df):
         """
         以饼图的形式职位数在城市维度上的分布情况
         """
@@ -227,7 +230,8 @@ class LaGou:
         plt.bar(keys, values)
         plt.show()
 
-    def __visualize_city_cloud(self, df):
+    @staticmethod
+    def __visualize_city_cloud(df):
         """
         绘制福利待遇的词云
         """
@@ -264,6 +268,7 @@ class LaGou:
         :return:
         """
         df = pd.read_csv(self.raw_data_path, encoding='utf-8')
+        # df = pd.read_csv("20201018_数据分析_raw.csv", encoding='utf-8')
         # self.__visualize_salary_hist(df)
         # self.__visualize_city_pie(df)
         self.__visualize_city_bar(df)
@@ -278,14 +283,15 @@ class LaGouFast:
         * 分析同一职业在不同城市维度上的数量情况   -> analysis_job_between_city()
     """
 
-    def fast_analysis_between_job(self, jobs):
+    @staticmethod
+    def fast_analysis_between_job(jobs):
         """
         快速分析不同职业在全国维度上的数量情况
         :param jobs: 职业(数组)
         """
         job_numbers = []
         for job in jobs:
-            total_count = LaGouUtil.__crawl_job_by_city(job)
+            total_count = LaGouFast.__crawl_job_by_city(job)
             print(job + " total count\t\t: " + str(total_count))
             job_numbers.append(total_count)
         title = "analysis between job"
@@ -309,7 +315,8 @@ class LaGouFast:
             title = "Post: " + job + " / Total: " + str(total_count)
             visualize_two_dimension(title, cities, np.array(job_numbers))
 
-    def __crawl_job_by_city(self, job, city=None):
+    @staticmethod
+    def __crawl_job_by_city(job, city=None):
         """
         :param city :指定城市
         :return     :获取某个职位在某个城市下的职位总数，如果city为空则表示获取全国数据

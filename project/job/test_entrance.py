@@ -1,7 +1,5 @@
 # -*- coding=utf-8 -*-
 import datetime
-import time
-
 from project.job.src.la_gou import analyze_job_base_la_gou
 from project.job.src.la_gou import analyze_job_special
 
@@ -28,7 +26,7 @@ Author          : Cucumber
 Date            : 09/28/20
 """
 if __name__ == '__main__':
-    job = "android"
+    job = "java"
     start_time = datetime.datetime.now()
     analyze_job_base_la_gou(job)
     print(datetime.datetime.now()-start_time)
