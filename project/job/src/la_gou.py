@@ -14,7 +14,7 @@ from wordcloud import WordCloud
 # from imageio import imread
 # import statsmodels.api as sm
 # from pyecharts import Bar
-from project.job.utils.util_common import get_current_date
+from project.job.utils.util_common import get_current_date, get_cities, get_cities_test
 from pylab import mpl
 import matplotlib.pyplot as plt
 
@@ -40,59 +40,49 @@ class LaGou:
 
     def crawl_data(self):
         """
+        爬取一个职位在全国的数据
+        :return:
+        """
+        total_info = []
+        cities_districts = get_cities()
+        for city in cities_districts.keys():
+            districts = cities_districts[city]
+            for district in districts:
+                total_info += self.__crawl_data(city, district)
+        need_columns = ['公司全名', '公司简称', '公司规模', '融资阶段', '区域',
+                        '职位名称', '工作经验', '学历要求', '薪资', '职位福利',
+                        '经营范围', '职位类型', '公司福利', '第二职位类型', '城市', '区域']
+        new_df = pd.DataFrame(data=total_info, columns=need_columns)
+        new_df.to_csv(self.raw_data_path, index=False)
+        print("")
+        print("It crawl {} count job data".format(str(len(total_info))))
+
+    def __crawl_data(self, city, district=None):
+        """
         爬取数据核心方法
         """
         url = ' https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false'
-        first_page = self.__get_json(self.job, url, 1)
+        if city is not None:
+            url += "&city=" + city
+        if district is not None:
+            url += "&district=" + district
+        first_page = LaGouUtil.get_json(self.job, url, 1)
         total_count = first_page['content']['positionResult']['totalCount']
         num = self.__get_page_num(total_count)
-        print("Total job count : {}, total page number:{}".format(total_count, num))
+        if district is None:
+            print("Job in {} total count is : {}".format(city, total_count))
+        else:
+            print("Job in {} {} total count is : {}".format(city, district, total_count))
+        print("")
         total_info = []
         time.sleep(2)
-        print("")
         for num in tqdm(range(1, num + 1)):
-            page_data = self.__get_json(self.job, url, num)
+            page_data = LaGouUtil.get_json(self.job, url, num)
             jobs_list = page_data['content']['positionResult']['result']
             page_info = self.__get_page_info(jobs_list)
             total_info += page_info
-            time.sleep(2)
-            df = pd.DataFrame(data=total_info,
-                              columns=['公司全名', '公司简称', '公司规模', '融资阶段', '区域',
-                                       '职位名称', '工作经验', '学历要求', '薪资', '职位福利',
-                                       '经营范围', '职位类型', '公司福利', '第二职位类型', '城市'])
-
-        df.to_csv(self.raw_data_path, index=False)
-
-    def __get_json(self, job, url, num=1):
-        """
-        TODO 按照爬取主要城市所有区的形式，绕过30页的限制，爬取更多的数据，力求数据更加全面
-        :param url 获取职位的url
-        :param num 页数，默认第一页
-        :return: 从指定的url中通过requests请求携带请求头和请求体获取网页中的职位的Json信息
-        """
-        __url = 'https://www.lagou.com/jobs/list_python%E5%BC%80%E5%8F%91%E5%B7%A5%E7%A8%8B%E5%B8%88?labelWords=&fromSearch=true&suginput='
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36',
-            'Host': 'www.lagou.com',
-            'Referer': 'https://www.lagou.com/jobs/list_%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90?labelWords=&fromSearch=true&suginput=',
-            'X-Anit-Forge-Code': '0',
-            'X-Anit-Forge-Token': 'None',
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-
-        data = {
-            'first': 'true',
-            'pn': num,
-            'kd': job}
-        # 建立session并拿到cookies
-        session = requests.Session()
-        session.get(url=__url, headers=headers, timeout=3)
-        cookie = session.cookies
-        res = requests.post(url, headers=headers, data=data, cookies=cookie, timeout=3)
-        res.raise_for_status()
-        res.encoding = 'utf-8'
-        page_data = res.json()
-        return page_data
+            time.sleep(3)
+        return total_info
 
     def __get_page_num(self, total_count):
         """
@@ -117,7 +107,7 @@ class LaGou:
         for i in jobs_list:
             job_info = [i['companyFullName'], i['companyShortName'], i['companySize'], i['financeStage'], i['district'],
                         i['positionName'], i['workYear'], i['education'], i['salary'], i['positionAdvantage'],
-                        i['industryField'], i['firstType'], i['companyLabelList'], i['secondType'], i['city']]
+                        i['industryField'], i['firstType'], i['companyLabelList'], i['secondType'], i['city'], i['district']]
             page_info_list.append(job_info)
         return page_info_list
 
@@ -125,20 +115,7 @@ class LaGou:
         """
         :return     :获取保存文件的路径
         """
-
         return get_current_date() + '_' + self.job + '_raw.csv'
-
-    def __crawl_job_by_city(self, job, city=None):
-        """
-        :param city :指定城市
-        :return     :获取某个职位在某个城市下的职位总数，如果city为空则表示获取全国数据
-        """
-        url = ' https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false'
-        if city is not None:
-            url += ("&city=" + city)
-        first_page = self.__get_json(job, url)
-        total_page_count = first_page['content']['positionResult']['totalCount']
-        return total_page_count
 
     def clean_data(self):
         """
@@ -278,35 +255,60 @@ class LaGou:
         plt.axis('off')
         plt.show()
 
-    def visualize_data(self):
+    def __visualize_data_overall(self):
+        """
+        一个职位的全国数据可视化
+        :return:
+        """
         df = pd.read_csv(self.raw_data_path, encoding='utf-8')
         # self.__visualize_salary_hist(df)
         # self.__visualize_city_pie(df)
         self.__visualize_city_bar(df)
         # self.__visualize_city_cloud(df)
 
+    def __visualize_data_city(self, city):
+        """
+        一个职位在一个城市内的数据可视化
+        :param city:
+        :return:
+        """
+        df = pd.read_csv(self.raw_data_path, encoding='utf-8')
+        # self.__visualize_salary_hist(df)
+        # self.__visualize_city_pie(df)
+        self.__visualize_city_bar(df)
+        # self.__visualize_city_cloud(df)
+
+    def visualize_data(self, city):
+        if city is None:
+            self.__visualize_data_overall()
+        else:
+            self.__visualize_data_city(city)
+
+
+class LaGouFast:
     """
         因为拉钩每页展示15天，总共可以展示30页，也就是说只能拿去450条数据，无法拿去全部数据
         但可以进行如下的分析：
         * 分析不同职业在全国维度上的数量情况      -> analysis_between_job()
         * 分析同一职业在不同城市维度上的数量情况   -> analysis_job_between_city()
     """
-    def analysis_between_job(self, jobs):
+
+    def fast_analysis_between_job(self, jobs):
         """
-        分析不同职业在全国维度上的数量情况
+        快速分析不同职业在全国维度上的数量情况
         :param jobs: 职业(数组)
         """
         job_numbers = []
         for job in jobs:
-            total_count = self.__crawl_job_by_city(job)
+            total_count = LaGouUtil.__crawl_job_by_city(job)
             print(job + " total count\t\t: " + str(total_count))
             job_numbers.append(total_count)
         title = "analysis between job"
         visualize_two_dimension(title, jobs, np.array(job_numbers))
 
-    def analysis_job_between_city(self, jobs, cities):
+    def fast_analysis_job_between_city(self, jobs, cities):
         """
-        分析同一职业在不同城市维度上的数量情况
+        快速分析同一职业在不同城市维度上的数量情况
         :param jobs     : 职业(数组) 有几张图片就会生成几张分析图片
         :param cities   : 城市(数组)
         """
@@ -322,9 +324,59 @@ class LaGou:
             title = "Post: " + job + " / Total: " + str(total_count)
             visualize_two_dimension(title, cities, np.array(job_numbers))
 
+    def __crawl_job_by_city(self, job, city=None):
+        """
+        :param city :指定城市
+        :return     :获取某个职位在某个城市下的职位总数，如果city为空则表示获取全国数据
+        """
+        url = ' https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false'
+        if city is not None:
+            url += ("&city=" + city)
+        first_page = LaGouUtil.get_json(job, url, 1)
+        return first_page['content']['positionResult']['totalCount']
 
-def analyze_job_base_la_gou(job, jobs, cities):
 
+class LaGouUtil:
+    @staticmethod
+    def get_json(job, url, num):
+        """
+        :param url 获取职位的url
+        :param num 页数，默认第一页
+        :return: 从指定的url中通过requests请求携带请求头和请求体获取网页中的职位的Json信息
+        """
+        __url = 'https://www.lagou.com/jobs/list_python%E5%BC%80%E5%8F%91%E5%B7%A5%E7%A8%8B%E5%B8%88?labelWords=&fromSearch=true&suginput='
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36',
+            'Host': 'www.lagou.com',
+            'Referer': 'https://www.lagou.com/jobs/list_%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90?labelWords=&fromSearch=true&suginput=',
+            'X-Anit-Forge-Code': '0',
+            'X-Anit-Forge-Token': 'None',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+
+        data = {
+            'first': 'true',
+            'pn': num,
+            'kd': job}
+        try:
+            # 建立session并拿到cookies
+            session = requests.Session()
+            session.get(url=__url, headers=headers, timeout=3)
+            cookie = session.cookies
+            res = requests.post(url, headers=headers, data=data, cookies=cookie, timeout=3)
+            res.raise_for_status()
+            res.encoding = 'utf-8'
+            return res.json()
+        except Exception:
+            print("It occurs some exception")
+
+
+def analyze_job_base_la_gou(job, city=None):
+    """
+    针对一个职位进行分析
+    :param job:
+    :param city: 如果不指定城市，则分析的是该职位全国的数据
+    """
     # 初始化
     la_gou = LaGou(job)
     # 爬取
@@ -332,10 +384,16 @@ def analyze_job_base_la_gou(job, jobs, cities):
     # 清洗
     la_gou.clean_data()
     # 可视化
-    la_gou.visualize_data()
+    la_gou.visualize_data(city)
     # 分析 -> 生成自动化报表（TODO 暂定MarkDown格式）
 
-# 以下独立分析
-    la_gou.analysis_between_job(jobs)
-    la_gou.analysis_job_between_city(jobs, cities)
 
+def analyze_job_special(jobs, cities):
+    """
+    自定义的从整体上分析职位
+    :param jobs:
+    :param cities:
+    """
+    la_gou_fast = LaGouFast()
+    la_gou_fast.fast_analysis_between_job(jobs)
+    la_gou_fast.fast_analysis_job_between_city(jobs, cities)
