@@ -47,14 +47,17 @@ class LaGou:
         cities_districts = get_cities()
         for city in cities_districts.keys():
             districts = cities_districts[city]
-            for district in districts:
-                total_info += self.__crawl_data(city, district)
+            city_info = []
+            print("start crawl " + city + " data")
+            for district in tqdm(districts):
+                city_info += self.__crawl_data(city, district)
+            total_info += city_info
+            print("Job in {} total count is : {} \n".format(city, str(len(city_info))))
         need_columns = ['公司全名', '公司简称', '公司规模', '融资阶段', '区域',
                         '职位名称', '工作经验', '学历要求', '薪资', '职位福利',
                         '经营范围', '职位类型', '公司福利', '第二职位类型', '城市', '区域']
         new_df = pd.DataFrame(data=total_info, columns=need_columns)
         new_df.to_csv(self.raw_data_path, index=False)
-        print("")
         print("It crawl {} count job data".format(str(len(total_info))))
 
     def __crawl_data(self, city, district=None):
@@ -65,18 +68,14 @@ class LaGou:
         if city is not None:
             url += "&city=" + city
         if district is not None:
+            print("\ncrawling " + district)
             url += "&district=" + district
         first_page = LaGouUtil.get_json(self.job, url, 1)
         total_count = first_page['content']['positionResult']['totalCount']
         num = self.__get_page_num(total_count)
-        if district is None:
-            print("Job in {} total count is : {}".format(city, total_count))
-        else:
-            print("Job in {} {} total count is : {}".format(city, district, total_count))
-        print("")
         total_info = []
         time.sleep(2)
-        for num in tqdm(range(1, num + 1)):
+        for num in range(1, num + 1):
             page_data = LaGouUtil.get_json(self.job, url, num)
             jobs_list = page_data['content']['positionResult']['result']
             page_info = self.__get_page_info(jobs_list)
@@ -149,14 +148,18 @@ class LaGou:
                 count += 1
 
         df['avg_work_year'] = avg_work_year
+
         # 将字符串转化为列表,薪资取最低值加上区间值得25%，比较贴近现实
         df['salary'] = df['薪资'].str.findall(pattern)
-
         avg_salary_list = []
         for k in df['salary']:
             int_list = [int(n) for n in k]
-            avg_salary = int_list[0] + (int_list[1] - int_list[0]) / 4
-            avg_salary_list.append(avg_salary)
+            if int_list.__len__() == 2:
+                avg_salary = int_list[0] + (int_list[1] - int_list[0]) / 4
+                avg_salary_list.append(avg_salary)
+            else:
+                print("---------exception---------")
+                avg_salary_list.append(0)
         df['月薪'] = avg_salary_list
         df.to_csv(self.raw_data_path, index=False)
 
@@ -255,7 +258,7 @@ class LaGou:
         plt.axis('off')
         plt.show()
 
-    def __visualize_data_overall(self):
+    def visualize_data(self):
         """
         一个职位的全国数据可视化
         :return:
@@ -265,24 +268,6 @@ class LaGou:
         # self.__visualize_city_pie(df)
         self.__visualize_city_bar(df)
         # self.__visualize_city_cloud(df)
-
-    def __visualize_data_city(self, city):
-        """
-        一个职位在一个城市内的数据可视化
-        :param city:
-        :return:
-        """
-        df = pd.read_csv(self.raw_data_path, encoding='utf-8')
-        # self.__visualize_salary_hist(df)
-        # self.__visualize_city_pie(df)
-        self.__visualize_city_bar(df)
-        # self.__visualize_city_cloud(df)
-
-    def visualize_data(self, city):
-        if city is None:
-            self.__visualize_data_overall()
-        else:
-            self.__visualize_data_city(city)
 
 
 class LaGouFast:
@@ -371,11 +356,10 @@ class LaGouUtil:
             print("It occurs some exception")
 
 
-def analyze_job_base_la_gou(job, city=None):
+def analyze_job_base_la_gou(job):
     """
     针对一个职位进行分析
     :param job:
-    :param city: 如果不指定城市，则分析的是该职位全国的数据
     """
     # 初始化
     la_gou = LaGou(job)
@@ -384,7 +368,7 @@ def analyze_job_base_la_gou(job, city=None):
     # 清洗
     la_gou.clean_data()
     # 可视化
-    la_gou.visualize_data(city)
+    la_gou.visualize_data()
     # 分析 -> 生成自动化报表（TODO 暂定MarkDown格式）
 
 

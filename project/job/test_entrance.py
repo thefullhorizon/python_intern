@@ -1,4 +1,7 @@
 # -*- coding=utf-8 -*-
+import datetime
+import time
+
 from project.job.src.la_gou import analyze_job_base_la_gou
 from project.job.src.la_gou import analyze_job_special
 
@@ -25,8 +28,10 @@ Author          : Cucumber
 Date            : 09/28/20
 """
 if __name__ == '__main__':
-    job = "数据分析"
-    analyze_job_base_la_gou(job, "北京")
+    job = "android"
+    start_time = datetime.datetime.now()
+    analyze_job_base_la_gou(job)
+    print(datetime.datetime.now()-start_time)
 
     # jobs = ['财务', '会计', '数据分析', 'java', 'android']
     # cities = ["北京", "上海", "深圳", "广州", "杭州",
