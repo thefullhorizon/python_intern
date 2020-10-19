@@ -8,12 +8,7 @@ import pandas as pd
 from tqdm import tqdm
 import jieba
 from wordcloud import WordCloud
-# from selenium import webdriver
-# from scipy.misc import imread
-# from imageio import imread
-# import statsmodels.api as sm
-# from pyecharts import Bar
-from project.job.utils.util_common import get_current_date, get_cities
+from project.job.utils.util_common import get_cities, get_csv_path
 from pylab import mpl
 import matplotlib.pyplot as plt
 
@@ -34,7 +29,7 @@ class LaGou:
 
     def __init__(self, job):
         self.job = job
-        self.raw_data_path = self.__get_path()
+        self.raw_data_path = get_csv_path(job, "la_gou")
         pass
 
     def crawl_data(self):
@@ -108,15 +103,10 @@ class LaGou:
         for i in jobs_list:
             job_info = [i['companyFullName'], i['companyShortName'], i['companySize'], i['financeStage'], i['district'],
                         i['positionName'], i['workYear'], i['education'], i['salary'], i['positionAdvantage'],
-                        i['industryField'], i['firstType'], i['companyLabelList'], i['secondType'], i['city'], i['district']]
+                        i['industryField'], i['firstType'], i['companyLabelList'], i['secondType'], i['city'],
+                        i['district']]
             page_info_list.append(job_info)
         return page_info_list
-
-    def __get_path(self):
-        """
-        :return     :获取保存文件的路径
-        """
-        return get_current_date() + '_' + self.job + '_raw.csv'
 
     def clean_data(self):
         """
@@ -165,7 +155,7 @@ class LaGou:
         df['月薪'] = avg_salary_list
         df.to_csv(self.raw_data_path, index=False)
 
-#   ----- 可视化部分 -----
+    #   ----- 可视化部分 -----
     def __visualize_salary_hist(self, df):
         """
         以直方图的形式查看薪资分布
@@ -340,15 +330,16 @@ class LaGouUtil:
     @staticmethod
     def get_json(job, url, num):
         """
+        :param job: 职位
         :param url 获取职位的url
         :param num 页数，默认第一页
         :return: 从指定的url中通过requests请求携带请求头和请求体获取网页中的职位的Json信息
         """
-        __url = 'https://www.lagou.com/jobs/list_python%E5%BC%80%E5%8F%91%E5%B7%A5%E7%A8%8B%E5%B8%88?labelWords=&fromSearch=true&suginput='
+        __url = 'https://www.lagou.com/jobs/list_'+job
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36',
             'Host': 'www.lagou.com',
-            'Referer': 'https://www.lagou.com/jobs/list_%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90?labelWords=&fromSearch=true&suginput=',
+            'Referer': 'https://www.lagou.com/jobs/list_'+job+'/p-city_0?&cl=false&fromSearch=true&labelWords=&suginput=',
             'X-Anit-Forge-Code': '0',
             'X-Anit-Forge-Token': 'None',
             'X-Requested-With': 'XMLHttpRequest'
@@ -367,11 +358,11 @@ class LaGouUtil:
             res.raise_for_status()
             res.encoding = 'utf-8'
             return res.json()
-        except Exception:
+        except IOError:
             print("It occurs some exception")
 
 
-def analyze_job_base_la_gou(job):
+def analyze_job_la_gou(job):
     """
     针对一个职位进行分析
     :param job:
@@ -379,9 +370,9 @@ def analyze_job_base_la_gou(job):
     # 初始化
     la_gou = LaGou(job)
     # 爬取
-    # la_gou.crawl_data()
+    la_gou.crawl_data()
     # 清洗
-    # la_gou.clean_data()
+    la_gou.clean_data()
     # 可视化
     la_gou.visualize_data()
     # 分析 -> 生成自动化报表（TODO 暂定MarkDown格式）

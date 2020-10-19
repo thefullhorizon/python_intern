@@ -1,6 +1,6 @@
 # -*- coding=utf-8 -*-
 import datetime
-from project.job.src.la_gou import analyze_job_base_la_gou
+from project.job.src.la_gou import analyze_job_la_gou
 from project.job.src.la_gou import analyze_job_special
 
 """
@@ -30,9 +30,10 @@ if __name__ == '__main__':
     # 爬取某个职位详细的全国数据并分析
     # job = "数据分析"
     # job = "android"
-    job = "java"
+    job = "数据分析"
+
     start_time = datetime.datetime.now()
-    analyze_job_base_la_gou(job)
+    analyze_job_la_gou(job)
     print(datetime.datetime.now()-start_time)
 
     # 仅仅获取某个职位在主要城市上的数据
