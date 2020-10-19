@@ -26,11 +26,16 @@ Author          : Cucumber
 Date            : 09/28/20
 """
 if __name__ == '__main__':
+
+    # 爬取某个职位详细的全国数据并分析
+    # job = "数据分析"
+    # job = "android"
     job = "java"
     start_time = datetime.datetime.now()
     analyze_job_base_la_gou(job)
     print(datetime.datetime.now()-start_time)
 
+    # 仅仅获取某个职位在主要城市上的数据
     # jobs = ['财务', '会计', '数据分析', 'java', 'android']
     # cities = ["北京", "上海", "深圳", "广州", "杭州",
     #           "南京", "成都", "重庆", "武汉", "郑州",

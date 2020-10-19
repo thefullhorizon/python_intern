@@ -224,10 +224,16 @@ class LaGou:
 
         # 使用matplotlib进行展示
         plt.figure(figsize=(10, 6))
-        plt.title("Post：" + self.job + " \n")
+        plt.title("岗位：" + self.job)
+        # 如果X轴的坐标 文字的坐标比较长的时候可以考虑这样的旋转
+        # plt.xticks(np.arange(len(keys))+1, keys, size='small', rotation=30)
         plt.xlabel("城市\n\n" + get_sign("拉勾"))
         plt.ylabel("数量")
+        plt.legend(["x"])
+        # plt.grid()
         plt.bar(keys, values)
+        for a, b in zip(keys, values):
+            plt.text(a, b + 0.05, '%.0f' % b, ha='center', va='bottom', fontsize=12)
         plt.show()
 
     @staticmethod
@@ -269,6 +275,8 @@ class LaGou:
         """
         df = pd.read_csv(self.raw_data_path, encoding='utf-8')
         # df = pd.read_csv("20201018_数据分析_raw.csv", encoding='utf-8')
+        # df = pd.read_csv("20201018_java_raw.csv", encoding='utf-8')
+        # df = pd.read_csv("20201018_android_raw.csv", encoding='utf-8')
         # self.__visualize_salary_hist(df)
         # self.__visualize_city_pie(df)
         self.__visualize_city_bar(df)
@@ -371,9 +379,9 @@ def analyze_job_base_la_gou(job):
     # 初始化
     la_gou = LaGou(job)
     # 爬取
-    la_gou.crawl_data()
+    # la_gou.crawl_data()
     # 清洗
-    la_gou.clean_data()
+    # la_gou.clean_data()
     # 可视化
     la_gou.visualize_data()
     # 分析 -> 生成自动化报表（TODO 暂定MarkDown格式）
