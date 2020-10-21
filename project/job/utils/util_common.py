@@ -70,12 +70,12 @@ def get_parent_dir():
     return os.path.abspath(os.path.dirname(os.getcwd()))
 
 
-def get_csv_path(job, platform):
+def get_file_name(job, platform):
     """
     定义CSV文件命名规则
     :return     :获取保存文件的路径
     """
-    return get_current_date() + '_raw_' + job + "_" + platform + '.csv'
+    return get_current_date() + '_raw_' + job + "_" + platform
 
 
 def open_url(path):

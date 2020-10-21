@@ -27,19 +27,19 @@ class QQClient:
 
     def __init__(self, receivers):
         self.receivers = receivers
-        self.qq_password = self.obtain_password()
+        self.qq_authority = self.obtain_authority()
 
-    def obtain_password(self):
-        config_path = '/Users/nashan/Documents/WS/pycharm/python_learning/security_center.config'
+    def obtain_authority(self):
+        config_path = '/Users/nashan/Documents/WS/pycharm/python_intern/security_center.config'
         dict_obj = read_dict(config_path)
-        return dict_obj['qq_password']
+        return dict_obj['authority']
 
     def try_send(self, message):
         try:
             message['From'] = self.from_alias
             message['To'] = self.receivers[0]
             qq_client = smtplib.SMTP_SSL(self.host, port=self.port)
-            qq_client.login(user=self.user, password=self.qq_password)
+            qq_client.login(user=self.user, password=self.qq_authority)
             qq_client.sendmail(from_addr=self.sender, to_addrs=self.receivers, msg=message.as_string())
             print("Sent email successfully")
             qq_client.quit()

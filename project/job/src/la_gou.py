@@ -12,7 +12,7 @@ import pandas as pd
 from tqdm import tqdm
 import jieba
 from wordcloud import WordCloud
-from project.job.utils.util_common import get_cities, get_csv_path
+from project.job.utils.util_common import get_cities
 from pylab import mpl
 import matplotlib.pyplot as plt
 
@@ -31,9 +31,9 @@ mpl.rcParams['axes.unicode_minus'] = False  # 解决保存图像是负号'-'显�
 
 class LaGou:
 
-    def __init__(self, job):
+    def __init__(self, job, file_name):
         self.job = job
-        self.raw_data_path = get_csv_path(job, "la_gou")
+        self.raw_data_path = file_name
         pass
 
     def crawl_data(self):
@@ -267,16 +267,14 @@ class LaGou:
     def visualize_data(self, pic_name):
         """
         一个职位的全国数据可视化
-        :return:
         """
-        # df = pd.read_csv(self.raw_data_path, encoding='utf-8')
-        df = pd.read_csv("20201018_数据分析_raw.csv", encoding='utf-8')
-        # df = pd.read_csv("20201018_java_raw.csv", encoding='utf-8')
-        # df = pd.read_csv("20201018_android_raw.csv", encoding='utf-8')
+        df = pd.read_csv(self.raw_data_path, encoding='utf-8')
+        # df = pd.read_csv("20201021_raw_XX_la_gou.csv", encoding='utf-8')
         # self.__visualize_salary_hist(df)
         # self.__visualize_city_pie(df)
         self.__visualize_city_bar(df, pic_name)
         # self.__visualize_city_cloud(df)
+        return df.count()
 
 
 class LaGouFast:
@@ -345,7 +343,7 @@ class LaGouUtil:
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36',
             'Host': 'www.lagou.com',
-            'Referer': 'https://www.lagou.com/jobs/list_'+job+'/p-city_0?&cl=false&fromSearch=true&labelWords=&suginput=',
+            'Referer': ('https://www.lagou.com/jobs/list_'+job+'/p-city_0?&cl=false&fromSearch=true&labelWords=&suginput=').encode('utf-8'),
             'X-Anit-Forge-Code': '0',
             'X-Anit-Forge-Token': 'None',
             'X-Requested-With': 'XMLHttpRequest'
@@ -354,11 +352,11 @@ class LaGouUtil:
         data = {
             'first': 'true',
             'pn': num,
-            'kd': job}
+            'kd': job.encode('utf-8')}
         try:
             # 建立session并拿到cookies
             session = requests.Session()
-            session.get(url=__url, headers=headers, timeout=3)
+            session.get(url=__url.encode('utf-8'), headers=headers, timeout=3)
             cookie = session.cookies
             res = requests.post(url, headers=headers, data=data, cookies=cookie, timeout=3)
             res.raise_for_status()
@@ -368,23 +366,23 @@ class LaGouUtil:
             print("It occurs some exception")
 
 
-def analyze_job_la_gou(job, accessory_pic, send_who):
+def analyze_job_la_gou(job, file_name, send_who):
     """
     针对一个职位进行分析
     :param send_who:
-    :param accessory_pic:
+    :param file_name: 文件的名字
     :param job:
     """
     start_time = datetime.datetime.now()
-
     # 初始化
-    la_gou = LaGou(job)
+    la_gou = LaGou(job, file_name + '.csv')
     # 爬取
     la_gou.crawl_data()
     # 清洗
     la_gou.clean_data()
     # 可视化
-    la_gou.visualize_data(accessory_pic)
+    accessory_pic = file_name + ".png"
+    data_count = la_gou.visualize_data(accessory_pic)
 
     # 输出
     # TODO 形式一：自动化报表 形式二：文章  形式三：数据看板
@@ -392,7 +390,8 @@ def analyze_job_la_gou(job, accessory_pic, send_who):
     # 结果通知(仅仅用作任务完后的通知)
     # 方式一：邮件[OK]  方式二：微信 方式三 更新到数据看板
     analyze_cost_time = datetime.datetime.now() - start_time
-    print(analyze_cost_time)
+    print("It costs " + analyze_cost_time.seconds + " and handle " + data_count + "pieces data")
+
     title = "{} job analysis result".format(job)
     content = "Successfully! you could have a overall cognition with the visualization picture. <br>It cost {} totally,".format(analyze_cost_time)
     client_qq = QQClient(send_who)
@@ -405,6 +404,9 @@ def analyze_job_special(jobs, cities):
     :param jobs:
     :param cities:
     """
+    start_time = datetime.datetime.now()
     la_gou_fast = LaGouFast()
     la_gou_fast.fast_analysis_between_job(jobs)
     la_gou_fast.fast_analysis_job_between_city(jobs, cities)
+    analyze_cost_time = datetime.datetime.now() - start_time
+    print("It totally cost " + analyze_cost_time)
