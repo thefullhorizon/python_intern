@@ -1,1 +1,4 @@
-/tutorial/database/sqlite/books.db
+*.db
+*.csv
+*.png
+*.config

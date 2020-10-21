@@ -56,6 +56,13 @@ def get_cities():
             }
 
 
+def get_current_dir():
+    """
+    :return: 获得当前运行文件的工作目录
+    """
+    return os.path.abspath('.')
+
+
 def get_parent_dir():
     """
     :return: 获取当前执行路径下的父文件目录

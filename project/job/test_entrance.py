@@ -1,7 +1,9 @@
 # -*- coding=utf-8 -*-
-import datetime
+import json
+
+from project.io_util import read_dict
 from project.job.src.la_gou import analyze_job_la_gou
-from project.job.src.la_gou import analyze_job_special
+from project.job.utils.util_common import get_current_dir
 
 """
 >>>该项目主要目的是想完整走一遍数据分析的流程：
@@ -27,14 +29,13 @@ Date            : 09/28/20
 """
 if __name__ == '__main__':
 
-    # 爬取某个职位详细的全国数据并分析
-    # job = "数据分析"
-    # job = "android"
+    # 爬取某个职位详细的全国数据并分析: 数据分析, android, java
     job = "数据分析"
-
-    start_time = datetime.datetime.now()
-    analyze_job_la_gou(job)
-    print(datetime.datetime.now()-start_time)
+    # 定义任务完后给到通知对象的一个邮件配图
+    accessory_pic = get_current_dir() + "/" + job + ".png"
+    # 定义任务完成后的通知对象
+    send_who = ['1013629814@qq.com']
+    analyze_job_la_gou(job, accessory_pic, send_who)
 
     # 仅仅获取某个职位在主要城市上的数据
     # jobs = ['财务', '会计', '数据分析', 'java', 'android']

@@ -1,5 +1,9 @@
 # -*- coding=utf-8 -*-
+import datetime
+
 import numpy as np
+
+from app.email_util import QQClient
 from project.job.utils.util_visualize import visualize_two_dimension, get_sign
 import requests
 import math
@@ -196,9 +200,10 @@ class LaGou:
         # plt.savefig('python地理位置分布图.jpg')
         plt.show()
 
-    def __visualize_city_bar(self, df):
+    def __visualize_city_bar(self, df, pic_path):
         """
         以柱状图的形式职位数在城市维度上的分布情况
+        :param pic_path 保存的图片绝对地址
         """
         city = df['城市'].value_counts()
         keys = city.index
@@ -224,6 +229,7 @@ class LaGou:
         plt.bar(keys, values)
         for a, b in zip(keys, values):
             plt.text(a, b + 0.05, '%.0f' % b, ha='center', va='bottom', fontsize=12)
+        plt.savefig(pic_path)
         plt.show()
 
     @staticmethod
@@ -258,18 +264,18 @@ class LaGou:
         plt.axis('off')
         plt.show()
 
-    def visualize_data(self):
+    def visualize_data(self, pic_name):
         """
         一个职位的全国数据可视化
         :return:
         """
-        df = pd.read_csv(self.raw_data_path, encoding='utf-8')
-        # df = pd.read_csv("20201018_数据分析_raw.csv", encoding='utf-8')
+        # df = pd.read_csv(self.raw_data_path, encoding='utf-8')
+        df = pd.read_csv("20201018_数据分析_raw.csv", encoding='utf-8')
         # df = pd.read_csv("20201018_java_raw.csv", encoding='utf-8')
         # df = pd.read_csv("20201018_android_raw.csv", encoding='utf-8')
         # self.__visualize_salary_hist(df)
         # self.__visualize_city_pie(df)
-        self.__visualize_city_bar(df)
+        self.__visualize_city_bar(df, pic_name)
         # self.__visualize_city_cloud(df)
 
 
@@ -362,11 +368,15 @@ class LaGouUtil:
             print("It occurs some exception")
 
 
-def analyze_job_la_gou(job):
+def analyze_job_la_gou(job, accessory_pic, send_who):
     """
     针对一个职位进行分析
+    :param send_who:
+    :param accessory_pic:
     :param job:
     """
+    start_time = datetime.datetime.now()
+
     # 初始化
     la_gou = LaGou(job)
     # 爬取
@@ -374,8 +384,19 @@ def analyze_job_la_gou(job):
     # 清洗
     la_gou.clean_data()
     # 可视化
-    la_gou.visualize_data()
-    # 分析 -> 生成自动化报表（TODO 暂定MarkDown格式）
+    la_gou.visualize_data(accessory_pic)
+
+    # 输出
+    # TODO 形式一：自动化报表 形式二：文章  形式三：数据看板
+
+    # 结果通知(仅仅用作任务完后的通知)
+    # 方式一：邮件[OK]  方式二：微信 方式三 更新到数据看板
+    analyze_cost_time = datetime.datetime.now() - start_time
+    print(analyze_cost_time)
+    title = "{} job analysis result".format(job)
+    content = "Successfully! you could have a overall cognition with the visualization picture. <br>It cost {} totally,".format(analyze_cost_time)
+    client_qq = QQClient(send_who)
+    client_qq.text_with_image(title, content, accessory_pic)
 
 
 def analyze_job_special(jobs, cities):
