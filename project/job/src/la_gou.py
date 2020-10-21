@@ -219,7 +219,7 @@ class LaGou:
 
         # 使用matplotlib进行展示
         plt.figure(figsize=(10, 6))
-        plt.title("岗位：" + self.job)
+        plt.title("岗位：{} | 总量：{}".format(self.job, str(df.shape[0])))
         # 如果X轴的坐标 文字的坐标比较长的时候可以考虑这样的旋转
         # plt.xticks(np.arange(len(keys))+1, keys, size='small', rotation=30)
         plt.xlabel("城市\n\n" + get_sign("拉勾"))
@@ -264,17 +264,25 @@ class LaGou:
         plt.axis('off')
         plt.show()
 
+    def __visualize_city_map(self, df):
+        """
+        TODO 地图可视化
+        :param df:
+        :return:
+        """
+        pass
+
     def visualize_data(self, pic_name):
         """
         一个职位的全国数据可视化
         """
         df = pd.read_csv(self.raw_data_path, encoding='utf-8')
-        # df = pd.read_csv("20201021_raw_XX_la_gou.csv", encoding='utf-8')
+        # df = pd.read_csv("20201021_raw_财务_la_gou.csv", encoding='utf-8')
         # self.__visualize_salary_hist(df)
         # self.__visualize_city_pie(df)
         self.__visualize_city_bar(df, pic_name)
         # self.__visualize_city_cloud(df)
-        return df.count()
+        return df.shape[0]
 
 
 class LaGouFast:
@@ -390,10 +398,11 @@ def analyze_job_la_gou(job, file_name, send_who):
     # 结果通知(仅仅用作任务完后的通知)
     # 方式一：邮件[OK]  方式二：微信 方式三 更新到数据看板
     analyze_cost_time = datetime.datetime.now() - start_time
-    print("It costs " + analyze_cost_time.seconds + " and handle " + data_count + "pieces data")
+    notification = "It costs {} and handle {} pieces data".format(analyze_cost_time, str(data_count))
+    print(notification)
 
     title = "{} job analysis result".format(job)
-    content = "Successfully! you could have a overall cognition with the visualization picture. <br>It cost {} totally,".format(analyze_cost_time)
+    content = "Successfully! you could have a overall cognition with the visualization picture. <br>{}".format(notification)
     client_qq = QQClient(send_who)
     client_qq.text_with_image(title, content, accessory_pic)
 
