@@ -2,6 +2,15 @@
 import pandas as pd
 import numpy as np
 
+"""
+学习总结：
+Pandas是基于Numpy的一种数据结构扩展，主要包含了Series, DataFrame两种数据结构
+
+>>>DataFrame
+
+学习从以下维度进行：数据结构构造，基本方法，数据分析相关（统计分析，相关分析，分组，清洗，数据转换）
+
+"""
 print('-----Series--------')
 # s = pd.Series([1, 2, 'horizon'])
 # print(s, type(s))

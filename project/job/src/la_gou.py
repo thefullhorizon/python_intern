@@ -112,18 +112,26 @@ class LaGou:
             page_info_list.append(job_info)
         return page_info_list
 
+    @staticmethod
+    def __clean_operation(content):
+        print(content)
+        if isinstance(content, str) and "移动互联网," in content:
+            return content.replace("移动互联网,", "")
+        else:
+            return content
+
     def clean_data(self):
         """
         对爬取的原始数据进行简单的数据处理
         """
         df = pd.read_csv(self.raw_data_path, encoding='utf-8')
-        # 进行数据清洗，过滤掉实习岗位
-        # df.drop(df[df['职位名称'].str.contains('实习')].index, inplace=True)
-        # print(df.describe())
+        # 过滤掉实习岗位
+        df.drop(df[df['职位名称'].str.contains('实习')].index, inplace=True)
+        # 如果经营范围已经有具体的分类时,就去掉经营范围值中的"移动互联网,"
+        df['经营范围'] = df['经营范围'].apply(lambda x: self.__clean_operation(x))
+
         # 由于csv文件中的字符是字符串形式，先用正则表达式将字符串转化为列表，在取区间的均值
-        pattern = '\d+'
-        # print(df['工作经验'], '\n\n\n')
-        # print(df['工作经验'].str.findall(pattern))
+        pattern = r'\d+'
         df['工作年限'] = df['工作经验'].str.findall(pattern)
         avg_work_year = []
         count = 0
@@ -160,17 +168,32 @@ class LaGou:
         df.to_csv(self.raw_data_path, index=False)
 
     #   ----- 可视化部分 -----
+    def deep_visualize(self):
+        df = pd.read_csv(self.raw_data_path, encoding='utf-8')
+
+        # 整体上，分析某个属性在数值维度上的分析
+        keys = ['月薪']
+        # keys = ['城市', '工作年限', '公司规模', '融资阶段', '职位类型', '经营范围']
+        for key in keys:
+            self.__visualize_number(df[key], key)
+
+        # 上海市内，分析城市区域在数值维度上的分析
+        care_city_data = df[df['城市'] == '上海']['区域.1']
+        self.__visualize_number(care_city_data, '上海-区域')
+
+        # 职位福利使用结巴分词来处理
+
     def __visualize_salary_hist(self, df):
         """
         以直方图的形式查看薪资分布
         """
         # 绘制python薪资的频率直方图并保存
-        plt.hist(df['月薪'], bins=8, facecolor='#ff6700', edgecolor='blue')  # bins是默认的条形数目
-        plt.title("Post：" + self.job + " \n")
-        plt.xlabel('薪资(单位/千元)\n\n' + get_sign("拉勾"))
-        plt.ylabel('频数/频率')
-        # plt.savefig('python薪资分布.jpg')
-        plt.show()
+        # plt.hist(df['月薪'], bins=8, facecolor='#ff6700', edgecolor='blue')  # bins是默认的条形数目
+        # plt.title("Post：" + self.job + " \n")
+        # plt.xlabel('薪资(单位/千元)\n\n' + get_sign("拉勾"))
+        # plt.ylabel('频数/频率')
+        # # plt.savefig('python薪资分布.jpg')
+        # plt.show()
 
     @staticmethod
     def __visualize_city_pie(df):
@@ -200,7 +223,28 @@ class LaGou:
         # plt.savefig('python地理位置分布图.jpg')
         plt.show()
 
-    def __visualize_city_bar(self, df, pic_path):
+    def __visualize_number(self, care_data, argument):
+        """
+        分析某个属性在数值维度上的可视化
+        """
+        care_data_statistic = care_data.value_counts().head(20)
+        keys = care_data_statistic.index
+        values = care_data_statistic.values
+        plt.figure(figsize=(12, 6))
+        plt.title("岗位：{} | 总量：{}".format(self.job, str(care_data.count())))
+        # 防止X轴文案互挡的问题
+        if '职位类型' == argument or '经营范围' == argument:
+            plt.xticks(np.arange(len(keys)), keys, size='small', rotation=30)
+            plt.tick_params(axis='x', labelsize=8)
+        plt.xlabel(argument + "\n" + get_sign("拉勾"))
+        plt.ylabel("数量")
+        plt.legend(["xxxxx"])
+        plt.bar(keys, values)
+        for a, b in zip(keys, values):
+            plt.text(a, b + 0.05, '%.0f' % b, ha='center', va='bottom', fontsize=12)
+        plt.show()
+
+    def __visualize_city_bar_for_email(self, df, pic_path):
         """
         以柱状图的形式职位数在城市维度上的分布情况
         :param pic_path 保存的图片绝对地址
@@ -276,12 +320,14 @@ class LaGou:
         """
         一个职位的全国数据可视化
         """
-        df = pd.read_csv(self.raw_data_path, encoding='utf-8')
-        # df = pd.read_csv("20201021_raw_财务_la_gou.csv", encoding='utf-8')
-        # self.__visualize_salary_hist(df)
+
+        # df = pd.read_csv(self.raw_data_path, encoding='utf-8')
+        # self.__visualize_city_bar_for_email(df, pic_name)
+        df = pd.read_csv("20201121_raw_数据分析_la_gou.csv", encoding='utf-8')
+        self.__visualize_salary_hist(df)
         # self.__visualize_city_pie(df)
-        self.__visualize_city_bar(df, pic_name)
         # self.__visualize_city_cloud(df)
+
         return df.shape[0]
 
 
@@ -347,11 +393,13 @@ class LaGouUtil:
         :param num 页数，默认第一页
         :return: 从指定的url中通过requests请求携带请求头和请求体获取网页中的职位的Json信息
         """
-        __url = 'https://www.lagou.com/jobs/list_'+job
+        __url = 'https://www.lagou.com/jobs/list_' + job
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36',
             'Host': 'www.lagou.com',
-            'Referer': ('https://www.lagou.com/jobs/list_'+job+'/p-city_0?&cl=false&fromSearch=true&labelWords=&suginput=').encode('utf-8'),
+            'Referer': (
+                        'https://www.lagou.com/jobs/list_' + job + '/p-city_0?&cl=false&fromSearch=true&labelWords=&suginput=').encode(
+                'utf-8'),
             'X-Anit-Forge-Code': '0',
             'X-Anit-Forge-Token': 'None',
             'X-Requested-With': 'XMLHttpRequest'
@@ -389,22 +437,23 @@ def analyze_job_la_gou(job, file_name, send_who):
     # 清洗
     la_gou.clean_data()
     # 可视化
+    # la_gou.deep_visualize()
     accessory_pic = file_name + ".png"
-    data_count = la_gou.visualize_data(accessory_pic)
+    # data_count = la_gou.visualize_data(accessory_pic)
 
     # 输出
     # TODO 形式一：自动化报表 形式二：文章  形式三：数据看板
 
     # 结果通知(仅仅用作任务完后的通知)
     # 方式一：邮件[OK]  方式二：微信 方式三 更新到数据看板
-    analyze_cost_time = datetime.datetime.now() - start_time
-    notification = "It costs {} and handle {} pieces data".format(analyze_cost_time, str(data_count))
-    print(notification)
-
-    title = "{} job analysis result".format(job)
-    content = "Successfully! you could have a overall cognition with the visualization picture. <br>{}".format(notification)
-    client_qq = QQClient(send_who)
-    client_qq.text_with_image(title, content, accessory_pic)
+    # analyze_cost_time = datetime.datetime.now() - start_time
+    # notification = "It costs {} and handle {} pieces data".format(analyze_cost_time, str(data_count))
+    # print(notification)
+    #
+    # title = "{} job analysis result".format(job)
+    # content = "Successfully! you could have a overall cognition with the visualization picture. <br>{}".format(notification)
+    # client_qq = QQClient(send_who)
+    # client_qq.text_with_image(title, content, accessory_pic)
 
 
 def analyze_job_special(jobs, cities):
