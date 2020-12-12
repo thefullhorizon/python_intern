@@ -1,8 +1,6 @@
 # -*- coding=utf-8 -*-
 import datetime
-
 import numpy as np
-
 from app.email_util import QQClient
 from project.job.utils.util_visualize import visualize_two_dimension, get_sign
 import requests
@@ -10,15 +8,13 @@ import math
 import time
 import pandas as pd
 from tqdm import tqdm
-import jieba
-from wordcloud import WordCloud
 from project.job.utils.util_common import get_cities
 from pylab import mpl
 import matplotlib.pyplot as plt
 
 """
 
-以拉钩为数据来源，对职业进行数据分析
+以拉钩为数据来源，进行数据爬虫，分析部分统一在Notebook上进行
 
 Author       :   Cucumber
 Date         :   10/14/20
@@ -167,83 +163,6 @@ class LaGou:
         df['月薪'] = avg_salary_list
         df.to_csv(self.raw_data_path, index=False)
 
-    #   ----- 可视化部分 -----
-    def deep_visualize(self):
-        df = pd.read_csv(self.raw_data_path, encoding='utf-8')
-
-        # 整体上，分析某个属性在数值维度上的分析
-        keys = ['月薪']
-        # keys = ['城市', '工作年限', '公司规模', '融资阶段', '职位类型', '经营范围']
-        for key in keys:
-            self.__visualize_number(df[key], key)
-
-        # 上海市内，分析城市区域在数值维度上的分析
-        care_city_data = df[df['城市'] == '上海']['区域.1']
-        self.__visualize_number(care_city_data, '上海-区域')
-
-        # 职位福利使用结巴分词来处理
-
-    def __visualize_salary_hist(self, df):
-        """
-        以直方图的形式查看薪资分布
-        """
-        # 绘制python薪资的频率直方图并保存
-        # plt.hist(df['月薪'], bins=8, facecolor='#ff6700', edgecolor='blue')  # bins是默认的条形数目
-        # plt.title("Post：" + self.job + " \n")
-        # plt.xlabel('薪资(单位/千元)\n\n' + get_sign("拉勾"))
-        # plt.ylabel('频数/频率')
-        # # plt.savefig('python薪资分布.jpg')
-        # plt.show()
-
-    @staticmethod
-    def __visualize_city_pie(df):
-        """
-        以饼图的形式职位数在城市维度上的分布情况
-        """
-        # 绘制饼状图并保存
-        city = df['城市'].value_counts()
-        label = city.keys()
-        city_list = []
-        count = 0
-        n = 1
-        distance = []
-        for i in city:
-            print(i)
-            city_list.append(i)
-            count += 1
-            if count > 5:
-                n += 0.1
-                distance.append(n)
-            else:
-                distance.append(0)
-        plt.pie(city_list, labels=label, labeldistance=1.2, autopct='%2.1f%%', pctdistance=0.6, shadow=True,
-                explode=distance)
-        plt.axis('equal')
-        plt.legend(loc='upper left', bbox_to_anchor=(-0.1, 1))
-        # plt.savefig('python地理位置分布图.jpg')
-        plt.show()
-
-    def __visualize_number(self, care_data, argument):
-        """
-        分析某个属性在数值维度上的可视化
-        """
-        care_data_statistic = care_data.value_counts().head(20)
-        keys = care_data_statistic.index
-        values = care_data_statistic.values
-        plt.figure(figsize=(12, 6))
-        plt.title("岗位：{} | 总量：{}".format(self.job, str(care_data.count())))
-        # 防止X轴文案互挡的问题
-        if '职位类型' == argument or '经营范围' == argument:
-            plt.xticks(np.arange(len(keys)), keys, size='small', rotation=30)
-            plt.tick_params(axis='x', labelsize=8)
-        plt.xlabel(argument + "\n" + get_sign("拉勾"))
-        plt.ylabel("数量")
-        plt.legend(["xxxxx"])
-        plt.bar(keys, values)
-        for a, b in zip(keys, values):
-            plt.text(a, b + 0.05, '%.0f' % b, ha='center', va='bottom', fontsize=12)
-        plt.show()
-
     def __visualize_city_bar_for_email(self, df, pic_path):
         """
         以柱状图的形式职位数在城市维度上的分布情况
@@ -252,14 +171,6 @@ class LaGou:
         city = df['城市'].value_counts()
         keys = city.index
         values = city.values
-
-        # 使用epychart
-        # bar = Bar("python职位的城市分布图")
-        # bar.add("城市", keys, values)
-        # bar.print_echarts_options()  # 该行只为了打印配置项，方便调试时使用
-        # result_url = "/Users/nashan/Documents/WS/pycharm/python_learning/project/job/a.html"
-        # bar.render(path=result_url)
-        # open_url(result_url)
 
         # 使用matplotlib进行展示
         plt.figure(figsize=(10, 6))
@@ -275,60 +186,6 @@ class LaGou:
             plt.text(a, b + 0.05, '%.0f' % b, ha='center', va='bottom', fontsize=12)
         plt.savefig(pic_path)
         plt.show()
-
-    @staticmethod
-    def __visualize_city_cloud(df):
-        """
-        绘制福利待遇的词云
-        """
-        text = ''
-        for line in df['公司福利']:
-            if len(eval(line)) == 0:
-                continue
-            else:
-                for word in eval(line):
-                    # print(word)
-                    text += word
-
-        cut_word = ','.join(jieba.cut(text))
-        # word_background = imread('公主.jpg')
-        cloud = WordCloud(
-            font_path=r'/Users/nashan/Documents/WS/pycharm/python_learning/project/job/song.ttf',
-            background_color='white',
-            # mask=word_background,
-            max_words=500,
-            max_font_size=100,
-            width=1024,
-            height=500
-
-        )
-        word_cloud = cloud.generate(cut_word)
-        # word_cloud.to_file('福利待遇词云.png')
-        plt.imshow(word_cloud)
-        plt.axis('off')
-        plt.show()
-
-    def __visualize_city_map(self, df):
-        """
-        TODO 地图可视化
-        :param df:
-        :return:
-        """
-        pass
-
-    def visualize_data(self, pic_name):
-        """
-        一个职位的全国数据可视化
-        """
-
-        # df = pd.read_csv(self.raw_data_path, encoding='utf-8')
-        # self.__visualize_city_bar_for_email(df, pic_name)
-        df = pd.read_csv("20201121_raw_数据分析_la_gou.csv", encoding='utf-8')
-        self.__visualize_salary_hist(df)
-        # self.__visualize_city_pie(df)
-        # self.__visualize_city_cloud(df)
-
-        return df.shape[0]
 
 
 class LaGouFast:
@@ -436,20 +293,15 @@ def analyze_job_la_gou(job, file_name, send_who):
     la_gou.crawl_data()
     # 清洗
     la_gou.clean_data()
-    # 可视化
-    # la_gou.deep_visualize()
-    accessory_pic = file_name + ".png"
-    # data_count = la_gou.visualize_data(accessory_pic)
 
-    # 输出
-    # TODO 形式一：自动化报表 形式二：文章  形式三：数据看板
+    # 注：在Jupyter Notebook上进行可视化
 
     # 结果通知(仅仅用作任务完后的通知)
     # 方式一：邮件[OK]  方式二：微信 方式三 更新到数据看板
     # analyze_cost_time = datetime.datetime.now() - start_time
     # notification = "It costs {} and handle {} pieces data".format(analyze_cost_time, str(data_count))
     # print(notification)
-    #
+
     # title = "{} job analysis result".format(job)
     # content = "Successfully! you could have a overall cognition with the visualization picture. <br>{}".format(notification)
     # client_qq = QQClient(send_who)
@@ -462,9 +314,7 @@ def analyze_job_special(jobs, cities):
     :param jobs:
     :param cities:
     """
-    start_time = datetime.datetime.now()
     la_gou_fast = LaGouFast()
     la_gou_fast.fast_analysis_between_job(jobs)
     la_gou_fast.fast_analysis_job_between_city(jobs, cities)
-    analyze_cost_time = datetime.datetime.now() - start_time
-    print("It totally cost " + analyze_cost_time)
+
