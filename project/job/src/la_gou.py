@@ -311,7 +311,7 @@ def analyze_job_la_gou(job, file_name, send_who):
     # 结果通知(仅仅用作任务完后的通知)
     # 方式一：邮件[OK]  方式二：微信 方式三 更新到数据看板
     pic_path = file_name + '.png'
-    generate_pic('20201223_raw_数据分析_la_gou.csv', pic_path)
+    generate_pic(file_path, pic_path)
     analyze_cost_time = datetime.datetime.now() - start_time
     title = "{} job analysis result".format(job)
     content = "Successfully! you could have a overall cognition with the visualization picture. <br>It costs {}".format(analyze_cost_time)
