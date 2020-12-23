@@ -91,10 +91,11 @@ class QQClient:
         msgAlternative.attach(MIMEText(email_content_template, 'html', 'utf-8'))
         message.attach(msgAlternative)
 
-        with open(accessory_pic, 'rb') as fp:
-            msgImage = MIMEImage(fp.read())
-        msgImage.add_header(_name='Content-ID', _value='<image_id>')
-        message.attach(msgImage)
+        if accessory_pic is not None:
+            with open(accessory_pic, 'rb') as fp:
+                msgImage = MIMEImage(fp.read())
+            msgImage.add_header(_name='Content-ID', _value='<image_id>')
+            message.attach(msgImage)
 
         self.try_send(message)
 

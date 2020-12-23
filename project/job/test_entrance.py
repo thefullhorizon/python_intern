@@ -37,18 +37,18 @@ if __name__ == '__main__':
         start_time = datetime.datetime.now()
         # 爬取某个职位详细的全国数据并分析: 数据分析, android, java
         job = "数据分析"
-        # 定义任务完后给到通知对象的一个邮件配图
+        # 定义任务完后给到通知对象的一个邮件配图文件
         file_name = get_file_name(job, "la_gou")
         # 定义任务完成后的通知对象
-        send_who = ['1013629814@qq.com']
-        # send_who = ['1510691263@qq.com']
+        send_who = ['3157398745@qq.com']
         analyze_job_la_gou(job, file_name, send_who)
         cost = datetime.datetime.now() - start_time
         print('It costs {}'.format(cost))
     else:
         # 快速获取某个职位在主要城市上的总数值数据
         start_time = datetime.datetime.now()
-        jobs = ['数据分析', '数据科学家', '大数据开发', '数据挖掘', 'Java', 'Android']
+        jobs = ['推荐算法']
+        # jobs = ['数据分析', '数据科学家', '大数据开发', '数据挖掘', 'Java', 'Android']
         cities = ["北京", "上海", "深圳", "广州", "杭州",
                   "南京", "成都", "重庆", "武汉", "郑州",
                   "西安", "苏州"]

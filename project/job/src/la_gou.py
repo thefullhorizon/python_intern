@@ -1,5 +1,7 @@
 # -*- coding=utf-8 -*-
 import datetime
+from collections import Iterable
+
 import numpy as np
 from app.email_util import QQClient
 from project.job.utils.util_visualize import visualize_two_dimension, get_sign
@@ -11,6 +13,7 @@ from tqdm import tqdm
 from project.job.utils.util_common import get_cities
 from pylab import mpl
 import matplotlib.pyplot as plt
+
 
 """
 
@@ -27,9 +30,9 @@ mpl.rcParams['axes.unicode_minus'] = False  # 解决保存图像是负号'-'显�
 
 class LaGou:
 
-    def __init__(self, job, file_name):
+    def __init__(self, job, file_path):
         self.job = job
-        self.raw_data_path = file_name
+        self.raw_data_path = file_path
         pass
 
     def crawl_data(self):
@@ -50,7 +53,7 @@ class LaGou:
             print("Job in {} total count is : {} \n".format(city, str(len(city_info))))
         need_columns = ['公司全名', '公司简称', '公司规模', '融资阶段', '区域',
                         '职位名称', '工作经验', '学历要求', '薪资', '职位福利',
-                        '经营范围', '职位类型', '公司福利', '第二职位类型', '城市', '区域']
+                        '经营范围', '职位类型', '公司福利', '第二职位类型', '城市']
         new_df = pd.DataFrame(data=total_info, columns=need_columns)
         new_df.to_csv(self.raw_data_path, index=False)
         print("It crawl {} count job data".format(str(len(total_info))))
@@ -72,10 +75,17 @@ class LaGou:
         time.sleep(2)
         for num in range(1, num + 1):
             page_data = LaGouUtil.get_json(self.job, url, num)
-            jobs_list = page_data['content']['positionResult']['result']
-            page_info = self.__get_page_info(jobs_list)
-            total_info += page_info
-            time.sleep(3)
+            if not isinstance(page_data, dict):
+                continue
+            try:
+                jobs_list = page_data['content']['positionResult']['result']
+                page_info = self.__get_page_info(jobs_list)
+                if page_info is None:
+                    continue
+                total_info += page_info
+                time.sleep(3)
+            except TypeError:
+                print("TypeError: 'NoneType' object is not subscriptable")
         return total_info
 
     @staticmethod
@@ -99,12 +109,13 @@ class LaGou:
         :param jobs_list:
         :return: 获取职位详细信息
         """
+        if not isinstance(jobs_list, Iterable):
+            return
         page_info_list = []
         for i in jobs_list:
             job_info = [i['companyFullName'], i['companyShortName'], i['companySize'], i['financeStage'], i['district'],
                         i['positionName'], i['workYear'], i['education'], i['salary'], i['positionAdvantage'],
-                        i['industryField'], i['firstType'], i['companyLabelList'], i['secondType'], i['city'],
-                        i['district']]
+                        i['industryField'], i['firstType'], i['companyLabelList'], i['secondType'], i['city']]
             page_info_list.append(job_info)
         return page_info_list
 
@@ -288,7 +299,8 @@ def analyze_job_la_gou(job, file_name, send_who):
     """
     start_time = datetime.datetime.now()
     # 初始化
-    la_gou = LaGou(job, file_name + '.csv')
+    file_path = file_name + '.csv'
+    la_gou = LaGou(job, file_path)
     # 爬取
     la_gou.crawl_data()
     # 清洗
@@ -298,14 +310,29 @@ def analyze_job_la_gou(job, file_name, send_who):
 
     # 结果通知(仅仅用作任务完后的通知)
     # 方式一：邮件[OK]  方式二：微信 方式三 更新到数据看板
-    # analyze_cost_time = datetime.datetime.now() - start_time
-    # notification = "It costs {} and handle {} pieces data".format(analyze_cost_time, str(data_count))
-    # print(notification)
+    pic_path = file_name + '.png'
+    generate_pic('20201223_raw_数据分析_la_gou.csv', pic_path)
+    analyze_cost_time = datetime.datetime.now() - start_time
+    title = "{} job analysis result".format(job)
+    content = "Successfully! you could have a overall cognition with the visualization picture. <br>It costs {}".format(analyze_cost_time)
+    client_qq = QQClient(send_who)
+    client_qq.text_with_image(title, content, pic_path)
 
-    # title = "{} job analysis result".format(job)
-    # content = "Successfully! you could have a overall cognition with the visualization picture. <br>{}".format(notification)
-    # client_qq = QQClient(send_who)
-    # client_qq.text_with_image(title, content, accessory_pic)
+
+def generate_pic(file_path, pic_path):
+    """
+    生成发送邮件需要中携带的概要图
+    :param file_path:
+    :param pic_path:
+    :return:
+    """
+    data = pd.read_csv(file_path)
+    need_data = data.groupby('城市').size().sort_values(ascending=True)
+    plt.barh(need_data.index, need_data.values)
+    plt.savefig(pic_path)
+    plt.title("样本数：{}".format(data.shape[0]))
+    plt.xlabel("\n" + get_sign("拉勾"))
+    plt.show()
 
 
 def analyze_job_special(jobs, cities):
